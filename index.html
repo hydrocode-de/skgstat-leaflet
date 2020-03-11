@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<head>
+    <!-- Add leaflet.js  -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+   integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+   crossorigin=""></script>
+   
+   <!-- Put this in an extra CSS file if it get too large -->
+   <style>
+       html, body {
+           width: 100%;
+           height: 100%;
+           margin: 0;
+           padding: 0;
+       }
+
+       #map {
+           width: 100%;
+           height: 100%;
+       }
+   </style>
+</head>
+<body>
+    <!-- This is the main map -->
+    <div id="map"></div>    
+
+    <!-- The main.py writes a coords.js file containing a data object -->
+    <script type="text/javascript" src="coords.js"></script>
+
+    <!-- Put this in an extra javascript file if it gets too large -->
+<script type="text/javascript">
+// build the map
+var m = L.map('map').setView([49.0143, 8.3858], 13);    
+
+// add basemap
+var basemap = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png', {
+	attribution: 'Page build by <a href="https://hydrocode.de" target="_blank">hydrocode</a>. Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	subdomains: 'abcd',
+	minZoom: 0,
+	maxZoom: 18,
+}).addTo(m);
+
+// add the kriging result as image overlay
+var krigLayer = L.imageOverlay(img, bnd, {opacity: 0.7}).addTo(m);
+
+// create the markers from the data object
+var markers = [];
+data.forEach(p => {
+    markers.push(L.marker([p.lat, p.lon]).bindPopup('<h3>Value: ' + p.value + ' </h3>').addTo(m));
+});
+
+// build the layers
+var overlays = {locations: L.layerGroup(markers), interpolation: krigLayer};
+L.control.layers({base: basemap}, overlays).addTo(m);
+</script>
+</body>
